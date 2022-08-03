@@ -1,16 +1,40 @@
 export const state = () => ({
   data: undefined,
+  schemes: [
+    {
+      groupName: "c1",
+      conditions: [
+        { kpi_id: "K0", condition: "C11", min: 90, max: 100 },
+        { kpi_id: "K2", condition: "C11", min: 20, max: 40 },
+        { kpi_id: "K3", condition: "C12", lessNumber: 50 },
+      ],
+      benefit: { kpi_id: "K3", static: 1000, dyanmic: 1 },
+    },
+  ],
+  header: [],
 });
 
 export const getters = {
   getData(state) {
     return state.data;
   },
+  getScheme(state) {
+    return state.schemes;
+  },
+  getHeaders(state) {
+    return state.header;
+  },
 };
 
 export const mutations = {
   setData(state, payload) {
     state.data = payload;
+  },
+  setHeader(state, payload) {
+    state.header = payload;
+  },
+  setScheme(state, payload) {
+    state.schemes.push(payload);
   },
 };
 
@@ -21,6 +45,13 @@ export const actions = {
       .then((res) => {
         const [firstEl, ...rest] = res.split("\r\n");
         const first = firstEl.split(",");
+        const header = first.map((el) => {
+          return {
+            value: el,
+            text: el,
+          };
+        });
+        vuexContext.commit("setHeader", header);
         const arrValue = rest.map((el, i, arr) => {
           const [
             kpi_id,
@@ -45,7 +76,14 @@ export const actions = {
       })
       .catch((e) => context.error(e));
   },
+  
   setData(vuexContext, payload) {
     vuexContext.commit("setData", payload);
+  },
+  setHeader(vuexContext, payload) {
+    vuexContext.commit("setHeader", payload);
+  },
+  setScheme(vuexContext, payload) {
+    vuexContext.commit("setScheme", payload);
   },
 };

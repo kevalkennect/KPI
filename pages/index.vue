@@ -1,20 +1,45 @@
 <template>
   <div>
-    <CreateScheme />
+    <ListScheme />
+    <v-dialog v-model="dialog" width="800">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn color="red lighten-2" dark v-bind="attrs" v-on="on">
+          Create Scheme
+        </v-btn>
+      </template>
+
+      <CreateScheme />
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" text @click="dialog = false">Close </v-btn>
+        <v-btn color="primary" text @click="$emit('createScheme')"
+          >Add Scheme
+        </v-btn>
+      </v-card-actions>
+    </v-dialog>
+
+  
+    <CalacData />
   </div>
 </template>
 
 <script>
 import CreateScheme from "../components/Schemes/CreateScheme.vue";
+import ListScheme from "../components/Schemes/ListScheme.vue";
+import CalacData from "../components/CalacData.vue";
 export default {
   components: {
     CreateScheme,
+    ListScheme,
+    CalacData,
   },
   data() {
     return {
       data: [],
       obj: {},
       result: {},
+    
+      dialog: false,
       schemes: {
         C11: (value) => value >= 90 && value <= 100,
         C12: (value) => value >= 20 && value <= 40,
