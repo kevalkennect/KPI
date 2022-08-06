@@ -18,7 +18,6 @@
       </v-card-actions>
     </v-dialog>
 
-  
     <CalacData />
   </div>
 </template>
@@ -38,7 +37,7 @@ export default {
       data: [],
       obj: {},
       result: {},
-    
+
       dialog: false,
       schemes: {
         C11: (value) => value >= 90 && value <= 100,
@@ -108,7 +107,7 @@ export default {
         this.obj[emp_id][year][month][kpi_id][product].kpi_val_in_rupees =
           +kpi_val_in_rupees;
       });
-      console.log(this.obj, "Object");
+      // console.log(this.obj, "Object");
       this.data.forEach((el, i, arr) => {
         const [
           kpi_id,

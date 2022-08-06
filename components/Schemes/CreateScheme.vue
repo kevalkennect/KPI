@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="bene">
-        {{ user_benefit?.dyanmic }}% of {{ user_benefit?.kpi_id }} and Dyanmic
+        {{ user_benefit?.dynamic }}% of {{ user_benefit?.kpi_id }} and Dyanmic
         Value is :
         {{ user_benefit?.static }}
       </div>
@@ -141,21 +141,21 @@ export default {
       let obj = {};
       if (this.condition == "C11")
         obj = {
-          kpi_id: this.select_kpi_id,
+          kpi_id_condition: this.select_kpi_id,
           condition: this.condition,
           min: +this.min,
           max: +this.max,
         };
       if (this.condition == "C12") {
         obj = {
-          kpi_id: this.select_kpi_id,
+          kpi_id_condition: this.select_kpi_id,
           condition: this.condition,
           lessNumber: +this.less_then_value,
         };
       }
       if (this.condition == "C13") {
         obj = {
-          kpi_id: this.select_kpi_id,
+          kpi_id_condition: this.select_kpi_id,
           condition: this.condition,
           greaterNumber: +this.greater_then_value,
         };
@@ -166,9 +166,9 @@ export default {
     addBenefit() {
       if (this.user_condition.length === 0) console.log("please add condition");
       this.user_benefit = {
-        kpi_id: this.kpi_id_benefit,
+        kpi_id_benefit: this.kpi_id_benefit,
         static: +this.static_value,
-        dyanmic: +this.dynamic_value,
+        dynamic: +this.dynamic_value,
       };
     },
     createScheme() {

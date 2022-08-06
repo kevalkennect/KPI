@@ -38,15 +38,23 @@ export default {
   },
   data() {
     return {
+      result: {},
+      condition: [],
+      benefit: {},
       scheme_id: "",
       dialog2: false,
+      nestedObj: {},
     };
   },
   computed: {
     setScheme() {
       return this.$store.getters.getScheme.map((el) => el.groupName);
     },
-    ///note
+    getData() {
+      return this.$store.getters.getData;
+    },
+
+    // /note
     // getScheme: {
     //   get() {
     //     return this.getScheme;
@@ -64,23 +72,180 @@ export default {
       if (!scheme) return;
       const { conditions, benefit, groupName } = scheme;
 
-      conditions.forEach(
-        ({ kpi_id, condition, min, max, lessThan, greaterNumber }) => {
-          if (condition == "C11") {
-            console.log(kpi_id, condition, min, max, lessThan, greaterNumber);
+      const { kpi_id_benefit, dynamic } = benefit;
+      console.log(scheme);
+      // this.getData.forEach((el, i, arr) => {
+      //   const [
+      //     kpi_id,
+      //     emp_id,
+      //     month,
+      //     year,
+      //     kpi_value,
+      //     product,
+      //     kpi_val_in_rupees,
+      //   ] = Object.values(el);
+
+      //   const K3 =
+      //     this.nestedObj[emp_id][year][month][this.benefit?.kpi_id][product]
+      //       .kpi_val_in_rupees;
+      //   console.log(K3);
+      // });
+      ////////
+      this.condition = conditions;
+
+      this.getData.forEach((el, i, arr) => {
+        const [
+          kpi_id_main,
+          emp_id,
+          month,
+          year,
+          kpi_value,
+          product,
+          kpi_val_in_rupees,
+        ] = Object.values(el);
+
+        this.condition.forEach(
+          ({
+            kpi_id_condition,
+            condition,
+            min,
+            max,
+            lessNumber,
+            greaterNumber,
+          }) => {
+            let value =
+              this.nestedObj[emp_id][year][month][kpi_id_benefit][product]
+                .kpi_val_in_rupees;
+            if (condition == "C11") {
+              if (
+                this.betweenTwoValue(
+                  +this.nestedObj[emp_id][year][month][kpi_id_condition][
+                    product
+                  ].kpi_value,
+                  min,
+                  max
+                ) === true
+              ) {
+                let percent_value = this.getPerc(+dynamic, +value);
+                console.log(percent_value);
+
+                this.result[year][month][emp_id][kpi_id_condition][
+                  product
+                ].benefits = percent_value;
+              }
+            }
+            if (condition == "C12") {
+              if (
+                this.lessThan(
+                  +this.nestedObj[emp_id][year][month][kpi_id_condition][
+                    product
+                  ].kpi_value,
+                  lessNumber
+                ) == true
+              ) {
+                // console.log("C12");
+                console.log(
+                  +this.nestedObj[emp_id][year][month][kpi_id_condition][
+                    product
+                  ].kpi_value,
+                  "--------->",
+                  kpi_id_condition
+                );
+                let percent_value = this.getPerc(+dynamic, +value);
+                console.log(percent_value);
+
+                this.result[year][month][emp_id][kpi_id_condition][
+                  product
+                ].benefits = percent_value;
+              }
+            }
+            if (condition == "C13") {
+              console.log("C13", greaterNumber);
+
+              if (
+                this.greaterThan(
+                  +this.nestedObj[emp_id][year][month][kpi_id_condition][
+                    product
+                  ].kpi_value,
+                  greaterNumber
+                ) == true
+              ) {
+                let percent_value = this.getPerc(+dynamic, +value);
+                console.log(percent_value);
+                this.result[year][month][emp_id][kpi_id_condition][
+                  product
+                ].benefits = percent_value;
+              }
+            }
           }
-          if (condition == "C12") {
-            console.log(kpi_id, condition, min, max, lessThan, greaterNumber);
-          }
-          if (condition == "C13") {
-            console.log(kpi_id, condition, min, max, lessThan, greaterNumber);
-          }
-        }
-      );
+        );
+      });
+      // const isTrue = this.betweenTwoValue(+1000, +10, +20);
+
+      // console.log(isTrue);
+
+      console.log(this.result);
     },
-    greaterThan(value, min, max) {},
-    lessThan() {},
-    betweenTwoValue() {},
+    getPerc(percent, num) {
+      console.log(percent, num);
+      percent = percent / 100;
+      return percent * num;
+    },
+    betweenTwoValue(value, min, max) {
+      if (value >= min && value <= max) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    lessThan(value, lessThan) {
+      //  C12: (value) => value >= 20 && value <= 40,
+      if (value < lessThan) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    greaterThan(value, greaterNumber) {
+      if (value >= greaterNumber) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+  },
+  created() {
+    function createNestedObject(base, names) {
+      for (var i = 0; i < names.length; i++) {
+        base = base[names[i]] = base[names[i]] || {};
+      }
+    }
+    this.getData.forEach((el, i, arr) => {
+      const [
+        kpi_id,
+        emp_id,
+        month,
+        year,
+        kpi_value,
+        product,
+        kpi_val_in_rupees,
+      ] = Object.values(el);
+
+      createNestedObject(this.nestedObj, [
+        emp_id,
+        year,
+        month,
+        kpi_id,
+        product,
+      ]);
+      createNestedObject(this.result, [year, month, emp_id, kpi_id, product]);
+
+      this.nestedObj[emp_id][year][month][kpi_id][product].kpi_value =
+        +kpi_value;
+      this.nestedObj[emp_id][year][month][kpi_id][product].kpi_val_in_rupees =
+        +kpi_val_in_rupees;
+    });
+    console.log(this.nestedObj);
   },
 };
 </script>

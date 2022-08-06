@@ -4,11 +4,11 @@ export const state = () => ({
     {
       groupName: "c1",
       conditions: [
-        { kpi_id: "K0", condition: "C11", min: 90, max: 100 },
-        { kpi_id: "K2", condition: "C11", min: 20, max: 40 },
-        { kpi_id: "K3", condition: "C12", lessNumber: 50 },
+        { kpi_id_condition: "K0", condition: "C11", min: 90, max: 100 },
+        { kpi_id_condition: "K2", condition: "C11", min: 20, max: 40 },
+        { kpi_id_condition: "K3", condition: "C12", lessNumber: 50 },
       ],
-      benefit: { kpi_id: "K3", static: 1000, dyanmic: 1 },
+      benefit: { kpi_id_benefit: "K3", static_value: 1000, dynamic: 1 },
     },
   ],
   header: [],
@@ -76,7 +76,7 @@ export const actions = {
       })
       .catch((e) => context.error(e));
   },
-  
+
   setData(vuexContext, payload) {
     vuexContext.commit("setData", payload);
   },
