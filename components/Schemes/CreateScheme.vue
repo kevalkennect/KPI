@@ -8,7 +8,7 @@
           {{ item.lessNumber }}
         </div>
       </div>
-      <div class="bene">
+      <div>
         {{ user_benefit?.dynamic }}% of {{ user_benefit?.kpi_id }} and Dyanmic
         Value is :
         {{ user_benefit?.static }}
@@ -167,7 +167,7 @@ export default {
       if (this.user_condition.length === 0) console.log("please add condition");
       this.user_benefit = {
         kpi_id_benefit: this.kpi_id_benefit,
-        static: +this.static_value,
+        static_value: +this.static_value,
         dynamic: +this.dynamic_value,
       };
     },

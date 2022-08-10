@@ -26,6 +26,12 @@
     <v-card-text>
       <v-btn @click="sumbit" color="primary">Go </v-btn>
     </v-card-text>
+    <v-data-table
+      class="elevation-1"
+      :headers="headers"
+      :items="result"
+      :items-per-page="10"
+    ></v-data-table>
   </v-card>
 </template>
 
@@ -38,12 +44,13 @@ export default {
   },
   data() {
     return {
-      result: {},
+      result: [],
       condition: [],
       benefit: {},
       scheme_id: "",
       dialog2: false,
       nestedObj: {},
+      headers: [],
     };
   },
   computed: {
@@ -72,7 +79,7 @@ export default {
       if (!scheme) return;
       const { conditions, benefit, groupName } = scheme;
 
-      const { kpi_id_benefit, dynamic } = benefit;
+      const { kpi_id_benefit, dynamic, static_value } = benefit;
       console.log(scheme);
       // this.getData.forEach((el, i, arr) => {
       //   const [
@@ -127,11 +134,17 @@ export default {
                 ) === true
               ) {
                 let percent_value = this.getPerc(+dynamic, +value);
-                console.log(percent_value);
 
-                this.result[year][month][emp_id][kpi_id_condition][
-                  product
-                ].benefits = percent_value;
+                // this.result[year][month][emp_id][kpi_id_condition][
+                //   product
+                // ].benefits = percent_value + static_value;
+                this.result.push({
+                  kpi_id_condition,
+                  year,
+                  month,
+                  product,
+                  benefit: percent_value + static_value,
+                });
               }
             }
             if (condition == "C12") {
@@ -152,16 +165,18 @@ export default {
                   kpi_id_condition
                 );
                 let percent_value = this.getPerc(+dynamic, +value);
-                console.log(percent_value);
+                console.log(static_value);
 
-                this.result[year][month][emp_id][kpi_id_condition][
-                  product
-                ].benefits = percent_value;
+                this.result.push({
+                  kpi_id_condition,
+                  year,
+                  month,
+                  product,
+                  benefit: percent_value + static_value,
+                });
               }
             }
             if (condition == "C13") {
-              console.log("C13", greaterNumber);
-
               if (
                 this.greaterThan(
                   +this.nestedObj[emp_id][year][month][kpi_id_condition][
@@ -171,23 +186,29 @@ export default {
                 ) == true
               ) {
                 let percent_value = this.getPerc(+dynamic, +value);
-                console.log(percent_value);
-                this.result[year][month][emp_id][kpi_id_condition][
-                  product
-                ].benefits = percent_value;
+                console.log(static_value);
+                this.result.push({
+                  kpi_id_condition,
+                  year,
+                  month,
+                  product,
+                  benefit: percent_value + static_value,
+                });
               }
             }
           }
         );
       });
-      // const isTrue = this.betweenTwoValue(+1000, +10, +20);
-
-      // console.log(isTrue);
-
-      console.log(this.result);
+      const [first, ...rest] = this.result;
+      this.headers = Object.keys(first).map((el) => {
+        return {
+          value: el,
+          text: el,
+        };
+      });
     },
+
     getPerc(percent, num) {
-      console.log(percent, num);
       percent = percent / 100;
       return percent * num;
     },
@@ -199,7 +220,6 @@ export default {
       }
     },
     lessThan(value, lessThan) {
-      //  C12: (value) => value >= 20 && value <= 40,
       if (value < lessThan) {
         return true;
       } else {
@@ -238,14 +258,27 @@ export default {
         kpi_id,
         product,
       ]);
-      createNestedObject(this.result, [year, month, emp_id, kpi_id, product]);
+
+      // this.result.push({
+      //   kpi_id,
+      //   emp_id,
+      //   month,
+      //   year,
+      //   kpi_value,
+      //   product,
+      //   kpi_val_in_rupees,
+      // });
+      // createNestedObject(this.result, [year, month, emp_id, kpi_id, product]);
+
+      // this.result[year][month][emp_id][kpi_id][product].kpi_value = +kpi_value;
+      // this.result[year][month][emp_id][kpi_id][product].kpi_val_in_rupeese =
+      //   +kpi_val_in_rupees;
 
       this.nestedObj[emp_id][year][month][kpi_id][product].kpi_value =
         +kpi_value;
       this.nestedObj[emp_id][year][month][kpi_id][product].kpi_val_in_rupees =
         +kpi_val_in_rupees;
     });
-    console.log(this.nestedObj);
   },
 };
 </script>

@@ -15,6 +15,9 @@ export default {
       desserts: this.$store.getters.getData,
     };
   },
+  created() {
+    console.log(this.headers);
+  },
 };
 </script>
 
